@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* Palette: coastal ink + sunset clay + lagoon teal. Light by default, dark follows the OS. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --ink: #0e1b2c;
+  --ink-2: #1c3049;
+  --on-ink: #ffffff;
+  --on-ink-muted: #c3ccd7;
+  --ink-accent: #9fd3c7;
+  --bg: #f6f5f1;
+  --surface: #ffffff;
+  --surface-2: #eceae3;
+  --fg: #0e1b2c;
+  --muted: #56606d;
+  --line: #e2dfd7;
+  --accent: #c8431a;
+  --on-accent: #ffffff;
+  --teal: #0b7a75;
+  --warn-bg: #fbe7de;
+  --warn-fg: #8a2e10;
+  --c1: #dcefea;
+  --c2: #9fd3c7;
+  --c3: #f2c48f;
+  --c4: #e07a3f;
+  --c5: #9e3410;
+  --c-fg-lo: #0e1b2c;
+  --c-fg-hi: #ffffff;
+  --bar: #c9d2dc;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --ink: #08101b;
+    --ink-2: #1a2c44;
+    --bg: #0a131f;
+    --surface: #13223a;
+    --surface-2: #0f1b2e;
+    --fg: #eef1f4;
+    --muted: #a9b4c1;
+    --line: #24364f;
+    --accent: #f0784c;
+    --on-accent: #1a0b05;
+    --teal: #5cc6ba;
+    --warn-bg: #3a1c12;
+    --warn-fg: #ffb79a;
+    --c1: #173a3a;
+    --c2: #23645e;
+    --c3: #9a6b2c;
+    --c4: #c4562a;
+    --c5: #f0784c;
+    --c-fg-lo: #eef1f4;
+    --c-fg-hi: #1a0b05;
+    --bar: #34475f;
+    color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-on-ink: var(--on-ink);
+  --color-on-ink-muted: var(--on-ink-muted);
+  --color-ink-accent: var(--ink-accent);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-teal: var(--teal);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-fg: var(--warn-fg);
+  --color-bar: var(--bar);
+  --font-display: var(--font-bricolage), "Avenir Next", system-ui, sans-serif;
+  --font-sans: var(--font-instrument), "Helvetica Neue", system-ui, sans-serif;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Elements that slide in from the side must never widen the page; clip (unlike hidden) keeps sticky working. */
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* Side gutter that also clears phone notches / system bars. */
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Date range picker, themed to the palette */
+.rdp-root {
+  --rdp-accent-color: var(--accent);
+  --rdp-accent-background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  --rdp-day-height: 42px;
+  --rdp-day-width: 42px;
+  --rdp-day_button-height: 40px;
+  --rdp-day_button-width: 40px;
+  --rdp-range_start-color: var(--on-accent);
+  --rdp-range_end-color: var(--on-accent);
+  --rdp-today-color: var(--teal);
+  --rdp-months-gap: 1.5rem;
+  font-family: var(--font-sans);
+}
+.rdp-month_caption {
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+.rdp-chevron {
+  fill: var(--fg);
+}
+@media (max-width: 380px) {
+  .rdp-root {
+    --rdp-day-height: 38px;
+    --rdp-day-width: 38px;
+    --rdp-day_button-height: 36px;
+    --rdp-day_button-width: 36px;
+  }
+}
+
+/* Range slider */
+input[type="range"].budget {
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent) var(--fill, 50%), var(--line) var(--fill, 50%));
+}
+input[type="range"].budget::-webkit-slider-thumb {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.2);
+  cursor: grab;
+}
+input[type="range"].budget::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 3px solid var(--accent);
+  cursor: grab;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
