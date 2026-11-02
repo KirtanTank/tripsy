@@ -1,6 +1,5 @@
 export type Coords = { lat: number; lon: number };
 
-/** A search suggestion from /api/places. */
 export type Place = Coords & {
   label: string; // "Panaji, Goa, India" — what goes in the input
   name: string; // "Panaji"
@@ -11,7 +10,6 @@ export type Place = Coords & {
 export const hasCoords = (c: Partial<Coords> | null | undefined): c is Coords =>
   !!c && Number.isFinite(c.lat) && Number.isFinite(c.lon) && Math.abs(c.lat!) <= 90 && Math.abs(c.lon!) <= 180;
 
-/** Great-circle distance in km. */
 export function distanceKm(a: Coords, b: Coords) {
   const R = 6371;
   const rad = (d: number) => (d * Math.PI) / 180;
@@ -41,7 +39,6 @@ export function hopHint(km: number) {
   return { mode: "drive" as const, text: `${duration(road / (road < 40 ? 28 : 55))} drive` };
 }
 
-/** Rough way to get from the home city to the destination. */
 export function journeyHint(km: number) {
   if (km < 30) return "A short local ride away";
   if (km < 350) return `About ${duration((km * 1.3) / 55)} by road`;

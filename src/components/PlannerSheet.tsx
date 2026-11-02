@@ -357,7 +357,6 @@ function TravelModePicker({ draft, update }: { draft: TripRequest; update: (patc
   );
 }
 
-/** Live "how far is it" card: appears once both ends are picked from the suggestions. */
 function JourneyCard({ draft }: { draft: TripRequest }) {
   const ok = hasCoords(draft.fromCoords) && hasCoords(draft.destCoords) && draft.from && draft.dest;
   const km = ok ? distanceKm(draft.fromCoords!, draft.destCoords!) : 0;

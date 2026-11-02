@@ -21,7 +21,6 @@ type Props = {
   onEnter?: () => void;
 };
 
-/** Text box with a live place-suggestions dropdown (combobox pattern: arrows to move, Enter to pick, Esc to close). */
 export function PlaceInput({ id, label, placeholder, value, icon: Icon, autoFocus, onChange, onEnter }: Props) {
   const listId = useId();
   const [open, setOpen] = useState(false);

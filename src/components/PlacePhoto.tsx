@@ -33,7 +33,6 @@ type Props = {
   sizes?: string;
 };
 
-/** A real traveler-facing photo of a place (fetched lazily when near the viewport), with an illustrated fallback. */
 export function PlacePhoto({ place, dest, type, index, className, caption = true }: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [photo, setPhoto] = useState<Photo | null | undefined>(undefined);

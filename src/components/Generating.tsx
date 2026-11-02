@@ -8,7 +8,6 @@ const WAIT = ["Reading up on your destination…", "Checking the season and holi
 
 export type Progress = { stage: "thinking" | "crowds" | "days" | "gallery" | "places"; days: number; total: number; dest: string };
 
-/** Full-screen progress while Claude builds the trip: a plane flies the route as days get written. */
 export function Generating({ progress, onStop }: { progress: Progress | null; onStop: () => void }) {
   const [tick, setTick] = useState(0);
   useEffect(() => {
@@ -79,7 +78,7 @@ export function Generating({ progress, onStop }: { progress: Progress | null; on
             </motion.div>
           </div>
           <div className="flex max-w-[460px] flex-col items-center gap-3 text-center">
-            <p className="eyebrow m-0 text-ink-accent">Building your roadmap</p>
+            <p className="m-0 font-semibold text-ink-accent">Planning your trip to</p>
             <h2 className="m-0 text-[clamp(30px,5vw,46px)] leading-none font-extrabold">{progress.dest}</h2>
             <AnimatePresence mode="wait">
               <motion.p key={message} className="m-0 text-lg text-on-ink-muted" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>

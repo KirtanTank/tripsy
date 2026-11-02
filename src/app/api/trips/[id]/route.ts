@@ -18,7 +18,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
   }
 }
 
-/** Only the visitor who saved a trip can delete it. */
 export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const owner = await ownerId({ create: false });

@@ -27,7 +27,6 @@ const MOTIFS: Record<string, React.ReactNode> = {
 };
 export const TILE_BG = ["#0B6E80", "#B5562E", "#2F6B4F", "#7A4B2A", "#127A7F", "#9E3410", "#3E6E8C", "#C8762A", "#1A8A6E", "#6E5BA8"];
 
-/** Illustrated stand-in shown while a photo loads or when none is found. */
 export function Motif({ type }: { type: StopType }) {
   const key = type === "beach" ? "beach" : type === "nature" ? "nature" : type === "cafe" || type === "food" ? "cafe" : "sight";
   return (

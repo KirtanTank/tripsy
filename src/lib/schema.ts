@@ -64,7 +64,7 @@ export const TravelOptionSchema = z.object({
 export type TravelOption = z.infer<typeof TravelOptionSchema>;
 
 export const TripSchema = z.object({
-  headline: z.string().describe("Punchy line, max 8 words"),
+  headline: z.string().describe("Plain title naming the trip's main draws, max 8 words, no full stop. Not a slogan"),
   summary: z.string().describe("One sentence"),
   travel: z
     .object({
@@ -78,7 +78,7 @@ export const TripSchema = z.object({
     note: z.string(),
   }),
   crowd: z.object({
-    headline: z.string().describe("Max 7 words"),
+    headline: z.string().describe("Plain summary of how crowded it will be, max 7 words, no full stop"),
     summary: z.string(),
     calendar: z.array(z.number()).describe("One crowd level (1-5) per requested calendar date, in order"),
     reasons: z.array(z.string()),
@@ -100,7 +100,6 @@ export type Trip = z.infer<typeof TripSchema>;
 export type Day = z.infer<typeof DaySchema>;
 export type Stop = z.infer<typeof StopSchema>;
 
-/** Wire format of the /api/plan NDJSON stream. */
 export type PlanEvent =
   | { type: "progress"; days: number; stage: "thinking" | "crowds" | "days" | "gallery" | "places" }
   /** cachedAt is set when the plan was reused from an identical earlier request instead of asking Claude again. */

@@ -1,6 +1,5 @@
 import type { Trip, TripRequest } from "./schema";
 
-/** Example trip shown until the visitor builds their own. */
 export const SAMPLE_REQUEST: TripRequest = {
   from: "Mumbai, Maharashtra, India",
   fromCoords: { lat: 19.076, lon: 72.8777 },
@@ -18,7 +17,7 @@ export const SAMPLE_REQUEST: TripRequest = {
 };
 
 export const SAMPLE_TRIP: Trip = {
-  headline: "5 days of sun, forts and long lunches.",
+  headline: "Beaches, forts and long Goan lunches",
   summary: "North Goa beaches, the Latin Quarter, a waterfall day and a slow finish down south.",
   travel: {
     options: [
@@ -40,7 +39,7 @@ export const SAMPLE_TRIP: Trip = {
     note: "Mid-range guesthouses in Candolim and Panjim, plus a scooter for two days.",
   },
   crowd: {
-    headline: "Busy, but not Christmas-busy.",
+    headline: "Busy, but not Christmas-busy",
     summary:
       "Your dates land just before the holiday rush. The weekend is the busiest stretch, so the popular beaches sit on weekdays.",
     calendar: [3, 3, 3, 3, 2, 3, 3, 4, 4, 3, 3, 3, 3, 4, 4, 5, 5, 4, 4],

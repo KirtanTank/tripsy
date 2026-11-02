@@ -10,7 +10,6 @@ const MAX_BYTES = 256 * 1024;
 // The trip came from our own planner, so it's only checked for shape here; the UI already copes with odd values.
 const Body = z.object({ request: TripRequestSchema, trip: z.looseObject({ days: z.array(z.unknown()).min(1) }) });
 
-/** The visitor's saved trips, newest first. */
 export async function GET() {
   const owner = await ownerId({ create: false });
   if (!owner) return Response.json({ trips: [] });
@@ -22,7 +21,6 @@ export async function GET() {
   }
 }
 
-/** Saves a planned trip and returns its share id. */
 export async function POST(request: Request) {
   const text = await request.text();
   if (text.length > MAX_BYTES) return Response.json({ error: "Trip too large" }, { status: 413 });

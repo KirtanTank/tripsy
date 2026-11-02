@@ -9,10 +9,8 @@ export const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 864e5)
 export const daysBetween = (a: string, b: string) => Math.round((parseISO(b).getTime() - parseISO(a).getTime()) / 864e5) + 1;
 export const fmt = (d: Date, o: Intl.DateTimeFormatOptions) => d.toLocaleDateString("en-US", { timeZone: "UTC", ...o });
 
-/** Local calendar date (from a date picker) → ISO day string. */
 export const localToISO = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-/** ISO day string → local Date at midnight (for the date picker). */
 export const isoToLocal = (s: string) => {
   const [y, m, d] = s.split("-").map(Number);
   return new Date(y, m - 1, d);

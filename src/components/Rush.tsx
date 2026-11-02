@@ -10,7 +10,7 @@ import { formatKm, hasCoords, type Coords, type Place } from "@/lib/geo";
 import { formatHours } from "@/lib/travel";
 import { LEVELS, level } from "@/lib/format";
 import { RUSH_DAYS, RUSH_REFRESH_MIN, interestLevel, roadLevel, rushLevel, rushWindow, type RushData } from "@/lib/rush";
-import { CountUp, Reveal, SectionHead } from "./Reveal";
+import { CountUp, SectionHead } from "./Reveal";
 
 const REFRESH_MS = RUSH_REFRESH_MIN * 60 * 1000;
 const VERDICT = ["Quieter than usual", "Normal traffic", "Picking up", "Getting busy", "The rush is on"];
@@ -93,12 +93,12 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
   return (
     <section ref={ref} id="rush" className="gutter mx-auto max-w-[1240px] scroll-mt-16 pt-24 md:pt-32">
       <SectionHead
-        eyebrow="Rush meter"
-        title={from ? `Who else is heading to ${to}.` : `How busy ${to} is getting.`}
-        lede={`Live signals from the ${RUSH_DAYS} days before you leave (${day(win.start)} – ${day(win.end)}): traffic on the road${from ? ` from ${from}` : ""}, planes in the sky nearby, and how many people are reading up on ${to}.`}
+        kicker="Rush meter"
+        title={`How busy is ${to} getting?`}
+        lede={`Checked over the ${RUSH_DAYS} days before you leave (${day(win.start)} – ${day(win.end)}): traffic on the road${from ? ` from ${from}` : ""}, planes overhead, and how many people are looking ${to} up on Wikipedia.`}
       />
 
-      <Reveal className="rush-grid relative mt-12 flex flex-col gap-7 overflow-hidden rounded-[32px] bg-ink p-5 text-on-ink md:p-9">
+      <div className="rush-grid relative mt-10 flex flex-col gap-7 overflow-hidden rounded-[24px] bg-ink p-5 text-on-ink md:p-9">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <PhaseBadge phase={data?.phase} opens={win.start} />
@@ -226,7 +226,7 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
           </div>
           <p className="m-0 max-w-[36ch] text-xs text-on-ink-muted">These are signals, not a headcount. Nobody publishes how many people are travelling somewhere.</p>
         </div>
-      </Reveal>
+      </div>
     </section>
   );
 }
@@ -309,7 +309,6 @@ const Big = ({ children, muted }: { children: React.ReactNode; muted?: boolean }
   <p className={clsx("m-0 font-display text-[40px] leading-none font-extrabold tabular-nums", muted && "text-[28px] text-on-ink-muted")}>{children}</p>
 );
 
-/** Daily views as a line that draws in, with the typical level as a dashed line. */
 function Spark({ days, baseline }: { days: { date: string; views: number }[]; baseline: number }) {
   const W = 120;
   const H = 44;
@@ -328,7 +327,6 @@ function Spark({ days, baseline }: { days: { date: string; views: number }[]; ba
   );
 }
 
-/** Five bars that fill up to the verdict level. */
 function Meter({ level: lv }: { level: number | null }) {
   return (
     <div className="flex h-10 items-end gap-1" aria-hidden="true">

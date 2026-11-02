@@ -9,7 +9,7 @@ import { PRIORITY_LABELS, type TravelMode, type TravelOption, type Trip, type Tr
 import { daysBetween, fmt, parseISO } from "@/lib/dates";
 import { clamp, money, num } from "@/lib/format";
 import { MODE_LABEL, cheapestIndex, fastestIndex, formatHours, recommend } from "@/lib/travel";
-import { CountUp, Reveal, SectionHead } from "./Reveal";
+import { SectionHead } from "./Reveal";
 
 /** Travel always uses teal; the rest of the budget uses neutrals so travel stands out. */
 const TRAVEL = "var(--teal)";
@@ -37,61 +37,42 @@ export function Glance({ request, trip, isSample, onReplan }: Props) {
   const stats = [
     { k: "Days", v: nDays, f: (n: number) => String(Math.round(n)), s: `${fmt(parseISO(request.start), { month: "short", day: "numeric" })} – ${fmt(parseISO(request.end), { month: "short", day: "numeric", year: "numeric" })}` },
     { k: "Stops", v: stops, f: (n: number) => String(Math.round(n)), s: `${request.pace} pace` },
-    { k: "Per person, per day", v: perDay, f: m, s: travelCost ? "At the destination" : `${request.travelers} traveler${request.travelers > 1 ? "s" : ""}` },
+    { k: "Per person a day", v: perDay, f: m, s: travelCost ? "At the destination" : `${request.travelers} traveler${request.travelers > 1 ? "s" : ""}` },
     { k: travelCost ? "Total with travel" : "Planned spend", v: total, f: m, s: over > 0 ? `${m(over)} over your ${m(request.budget)}` : `${m(request.budget - total)} left of ${m(request.budget)}`, warn: over > 0 },
   ];
 
   return (
     <section id="glance" className="gutter mx-auto max-w-[1240px] scroll-mt-16 pt-24 pb-6 md:pt-32">
       <SectionHead
-        eyebrow={`${request.dest} at a glance`}
+        kicker={`${request.dest.split(",")[0]}, ${nDays} days${isSample ? " · example trip" : ""}`}
         title={trip.headline}
-        aside={
-          <Reveal delay={0.2} y={20} className="flex max-w-[380px] flex-col gap-3">
-            {isSample && <span className="self-start rounded-full bg-surface-2 px-3 py-1 text-[13px] font-bold text-muted">Example trip</span>}
-            <p className="m-0 text-[17px] text-muted">{trip.summary}</p>
-          </Reveal>
-        }
+        aside={<p className="m-0 max-w-[380px] text-[17px] text-muted">{trip.summary}</p>}
       />
 
-      <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+      <dl className="mt-10 grid grid-cols-2 gap-y-6 border-y border-line py-6 md:grid-cols-[1fr_1fr_1fr_1.4fr] md:divide-x md:divide-line">
         {stats.map((s, i) => (
-          <motion.div
-            key={s.k}
-            initial={{ opacity: 0, y: 30, rotate: i % 2 ? 2 : -2 }}
-            whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-            viewport={{ once: true, margin: "-10% 0px" }}
-            transition={{ delay: i * 0.08, type: "spring", bounce: 0.35, duration: 0.8 }}
-            whileHover={{ y: -4 }}
-            className="flex min-w-0 flex-col gap-1.5 rounded-3xl border border-line bg-surface p-5 md:p-6"
-          >
-            <span className="eyebrow text-[11px] text-muted">{s.k}</span>
-            <span className="truncate font-display text-[clamp(28px,4vw,42px)] leading-none font-extrabold tabular-nums">
-              <CountUp value={s.v} format={s.f} />
-            </span>
-            <span className={`text-sm ${s.warn ? "font-bold text-accent" : "text-muted"}`}>{s.s}</span>
-          </motion.div>
+          <div key={s.k} className={`flex min-w-0 flex-col gap-1 ${i % 2 ? "pl-5" : ""} md:px-6 md:first:pl-0`}>
+            <dt className="text-sm text-muted">{s.k}</dt>
+            <dd className={`m-0 truncate font-display leading-none font-extrabold tabular-nums ${i === stats.length - 1 ? "text-[clamp(30px,4vw,46px)] text-accent" : "text-[clamp(26px,3.2vw,36px)]"}`}>{s.f(s.v)}</dd>
+            <dd className={`m-0 text-sm ${s.warn ? "font-bold text-accent" : "text-muted"}`}>{s.s}</dd>
+          </div>
         ))}
-      </div>
+      </dl>
 
       {options.length > 0 && <TravelCard request={request} options={options} chosen={chosen} onReplan={onReplan} />}
 
       {(breakdown.length > 0 || travelCost > 0) && (
-        <Reveal className="mt-4 flex flex-col gap-4 rounded-3xl border border-line bg-surface p-6">
+        <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-line bg-surface p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="m-0 text-[22px] font-bold">Where your money goes</h3>
+            <h3 className="m-0 text-[22px] font-bold">Budget</h3>
             <span className={clsx("text-sm font-bold tabular-nums", over > 0 ? "text-accent" : "text-muted")}>
               {m(total)} of {m(request.budget)}
             </span>
           </div>
 
           {travelCost > 0 && (
-            <motion.div
-              initial={{ opacity: 0, x: -16 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 px-4 py-3"
+            <div
+              className="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 px-4 py-3"
               style={{ borderColor: TRAVEL, background: `color-mix(in srgb, ${TRAVEL} 12%, transparent)` }}
             >
               <span className="inline-flex min-w-0 items-center gap-2 font-semibold">
@@ -104,7 +85,7 @@ export function Glance({ request, trip, isSample, onReplan }: Props) {
                 </span>
               </span>
               <strong className="font-display text-xl font-extrabold text-teal tabular-nums">{m(travelCost)}</strong>
-            </motion.div>
+            </div>
           )}
 
           <div className="flex h-5 gap-[3px] overflow-hidden rounded-full" aria-hidden="true">
@@ -141,7 +122,7 @@ export function Glance({ request, trip, isSample, onReplan }: Props) {
             {travelCost > 0 ? `${m(onTrip)} at the destination + ${m(travelCost)} travel. ` : ""}
             {trip.budget.note}
           </p>
-        </Reveal>
+        </div>
       )}
     </section>
   );
@@ -172,9 +153,9 @@ function TravelCard({ request, options, chosen, onReplan }: { request: TripReque
   })();
 
   return (
-    <Reveal className="mt-4 flex flex-col gap-5 overflow-hidden rounded-3xl bg-ink p-6 text-on-ink md:p-8">
+    <div className="mt-6 flex flex-col gap-5 overflow-hidden rounded-2xl bg-ink p-6 text-on-ink md:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="eyebrow text-[12px] text-ink-accent">Getting there</span>
+        <h3 className="m-0 text-[22px] font-bold">Getting there</h3>
         {km !== null && <span className="rounded-full bg-ink-2 px-3 py-1 text-sm font-bold tabular-nums">{formatKm(km)}</span>}
       </div>
 
@@ -284,6 +265,6 @@ function TravelCard({ request, options, chosen, onReplan }: { request: TripReque
           {rec !== chosen && <span className="text-on-ink"> Your current plan uses the {MODE_LABEL[options[chosen].mode].toLowerCase()}.</span>}
         </motion.p>
       </AnimatePresence>
-    </Reveal>
+    </div>
   );
 }

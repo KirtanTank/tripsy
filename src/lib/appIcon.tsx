@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-/** The app icon: the route mark on ink, drawn at any size. */
 export function appIcon(size: number) {
   const stroke = Math.max(2, size / 14);
   return new ImageResponse(

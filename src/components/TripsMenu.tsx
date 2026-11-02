@@ -9,7 +9,6 @@ import type { TripSummary } from "@/lib/db";
 
 const range = (t: TripSummary) => `${fmt(parseISO(t.start), { month: "short", day: "numeric" })} – ${fmt(parseISO(t.end), { month: "short", day: "numeric", year: "numeric" })}`;
 
-/** The visitor's saved trips, from the database. Loaded each time it opens, so it's never stale. */
 export function TripsMenu({ currentId, onOpen, onDeleted }: { currentId: string | null; onOpen: (id: string) => void; onDeleted: (id: string) => void }) {
   const [open, setOpen] = useState(false);
   const [trips, setTrips] = useState<TripSummary[] | null>(null);

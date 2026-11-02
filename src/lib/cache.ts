@@ -43,7 +43,6 @@ async function redis<T>(command: (string | number)[]): Promise<T> {
   return j.result as T;
 }
 
-/** The store behind memory: Redis when configured, else disk. Both are best-effort; memory still works without them. */
 const shared = REDIS_URL && REDIS_TOKEN
   ? {
       async get<T>(ns: string, key: string) {
@@ -89,7 +88,6 @@ function remember(id: string, e: Entry<unknown>) {
   if (store.mem.size > MAX_MEMORY) store.mem.delete(store.mem.keys().next().value!);
 }
 
-/** Stores a value for `ttl` seconds. */
 export async function put<T>(ns: string, key: string, value: T, ttl: number) {
   const e: Entry<T> = { at: Date.now(), ttl, value };
   remember(`${ns}:${key}`, e);
@@ -100,7 +98,6 @@ export async function put<T>(ns: string, key: string, value: T, ttl: number) {
   }
 }
 
-/** A stored value that hasn't expired, without calling anything. */
 export async function peek<T>(ns: string, key: string): Promise<{ value: T; at: number } | null> {
   const e = await read<T>(ns, key);
   const ok = !!e && Date.now() - e.at < e.ttl * 1000;
@@ -145,5 +142,4 @@ export async function cached<T>(ns: string, parts: unknown, ttl: number, fn: () 
   return { value, hit: false, at: Date.now() };
 }
 
-/** Hits and misses per API since the server started. */
 export const cacheStats = () => ({ ...store.stats });

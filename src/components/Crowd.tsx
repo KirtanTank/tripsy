@@ -5,7 +5,7 @@ import { CalendarClock } from "lucide-react";
 import type { Trip, TripRequest } from "@/lib/schema";
 import { calendarDates, fmt, parseISO } from "@/lib/dates";
 import { LEVELS, clamp, level, num } from "@/lib/format";
-import { Reveal, SectionHead } from "./Reveal";
+import { SectionHead } from "./Reveal";
 
 const cellStyle = (l: number) => ({ background: `var(--c${l})`, color: l >= 4 ? "var(--c-fg-hi)" : "var(--c-fg-lo)" });
 const HOURS = ["6a", "10a", "2p", "6p", "8p"];
@@ -31,10 +31,10 @@ export function Crowd({ request, trip, onUseDates }: { request: TripRequest; tri
 
   return (
     <section id="crowd" className="gutter mx-auto max-w-[1240px] scroll-mt-16 pt-24 md:pt-32">
-      <SectionHead eyebrow="Crowd forecast" title={trip.crowd.headline || `${LEVELS[avg - 1]} on your dates.`} lede={trip.crowd.summary} />
+      <SectionHead kicker="Crowd forecast" title={trip.crowd.headline || `${LEVELS[avg - 1]} on your dates`} lede={trip.crowd.summary} />
 
       <div className="mt-12 flex flex-wrap items-stretch gap-4">
-        <Reveal className="flex min-w-0 flex-[999_1_560px] flex-col gap-5 rounded-3xl border border-line bg-surface p-5 md:p-7">
+        <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-5 rounded-2xl border border-line bg-surface p-5 md:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h3 className="m-0 text-[22px] font-bold">{monthLabel}</h3>
             <div className="flex items-center gap-1.5 text-[13px] text-muted" aria-hidden="true">
@@ -92,13 +92,12 @@ export function Crowd({ request, trip, onUseDates }: { request: TripRequest; tri
               ))}
             </ul>
           )}
-        </Reveal>
+        </div>
 
         <div className="flex min-w-0 flex-[1_1_320px] flex-col gap-4">
           {altOk && (
-            <Reveal delay={0.1} className="relative flex flex-col gap-3 overflow-hidden rounded-3xl bg-ink p-7 text-on-ink">
-              <motion.div aria-hidden="true" className="absolute -top-16 -right-16 size-48 rounded-full bg-accent/25 blur-2xl" animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 5, repeat: Infinity }} />
-              <span className="eyebrow relative text-[12px] text-ink-accent">Quieter option</span>
+            <div className="relative flex flex-col gap-3 overflow-hidden rounded-2xl bg-ink p-7 text-on-ink">
+              <span className="relative text-sm font-semibold text-ink-accent">Quieter option</span>
               <p className="relative m-0 font-display text-[26px] leading-tight font-bold">
                 Go {fmt(parseISO(alt!.start), { month: "short", day: "numeric" })} – {fmt(parseISO(alt!.end), { month: "short", day: "numeric" })} instead.
               </p>
@@ -111,10 +110,10 @@ export function Crowd({ request, trip, onUseDates }: { request: TripRequest; tri
               >
                 <CalendarClock size={17} /> Use these dates
               </motion.button>
-            </Reveal>
+            </div>
           )}
           {hours.length > 0 && (
-            <Reveal delay={0.2} className="flex flex-1 flex-col gap-4 rounded-3xl border border-line bg-surface p-7">
+            <div className="flex flex-1 flex-col gap-4 rounded-2xl border border-line bg-surface p-7">
               <div>
                 <h3 className="m-0 text-xl font-bold">{trip.crowd.bestTime.place}, by the hour</h3>
                 <span className="text-sm text-muted">Best window: {trip.crowd.bestTime.window}</span>
@@ -137,7 +136,7 @@ export function Crowd({ request, trip, onUseDates }: { request: TripRequest; tri
                   <span key={h}>{h}</span>
                 ))}
               </div>
-            </Reveal>
+            </div>
           )}
         </div>
       </div>

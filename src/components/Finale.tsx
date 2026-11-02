@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
 import { Check, Copy, Download, Link2, Share2, Sparkles } from "lucide-react";
 import type { Trip, TripRequest } from "@/lib/schema";
 import { addDays, fmt, parseISO } from "@/lib/dates";
 import { money, num } from "@/lib/format";
-import { Reveal } from "./Reveal";
 
 function toMarkdown(req: TripRequest, trip: Trip) {
   const lines = [
@@ -61,13 +59,12 @@ export function Finale({ request, trip, tripId, onPlan }: { request: TripRequest
   const btn = "inline-flex min-h-12 items-center gap-2 rounded-full px-5 font-bold";
   return (
     <div className="gutter mx-auto max-w-[1240px] pt-10 pb-24">
-      <Reveal className="relative flex flex-wrap items-center justify-between gap-8 overflow-hidden rounded-[32px] bg-accent p-[clamp(28px,6vw,72px)] text-on-accent">
-        <motion.div aria-hidden="true" className="absolute -right-24 -bottom-24 size-80 rounded-full border-[40px] border-white/10" animate={{ rotate: 360 }} transition={{ duration: 40, repeat: Infinity, ease: "linear" }} />
-        <div className="relative flex max-w-[620px] flex-col gap-3">
-          <h2 className="m-0 text-[clamp(32px,5vw,58px)] leading-none font-extrabold">Your road is drawn. Pack light.</h2>
-          <p className="m-0 text-[17px] opacity-90">Take it offline, send it to your travel crew, or plan the next one.</p>
+      <div className="flex flex-wrap items-center justify-between gap-8 rounded-[24px] bg-accent p-[clamp(28px,5vw,56px)] text-on-accent">
+        <div className="flex max-w-[620px] flex-col gap-3">
+          <h2 className="m-0 text-[clamp(30px,4.5vw,50px)] leading-[1.02] font-extrabold">Take it with you</h2>
+          <p className="m-0 text-[17px] opacity-90">Download it, copy it as text, or send the link to whoever&apos;s coming along.</p>
         </div>
-        <div className="relative flex flex-wrap gap-2.5">
+        <div className="flex flex-wrap gap-2.5">
           <button type="button" onClick={download} className={`${btn} bg-on-accent text-accent`}>
             <Download size={18} /> Download
           </button>
@@ -88,7 +85,7 @@ export function Finale({ request, trip, tripId, onPlan }: { request: TripRequest
             <Sparkles size={18} /> Plan another
           </button>
         </div>
-      </Reveal>
+      </div>
     </div>
   );
 }

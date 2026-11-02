@@ -41,7 +41,7 @@ export function Gallery({ dest, items }: { dest: string; items: Trip["gallery"] 
   if (reduced) {
     return (
       <section id="gallery" className="gutter mx-auto max-w-[1240px] scroll-mt-16 py-24">
-        <SectionHead eyebrow="Seen by travelers" title="Before you go, see it through their eyes." />
+        <SectionHead title="Photos from people who've been" />
         <div className="mt-10 grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
           {cards.map((g, i) => (
             <PlacePhoto key={g.place} place={g.place} dest={dest} type={g.type} index={i} className="h-64" />
@@ -56,9 +56,8 @@ export function Gallery({ dest, items }: { dest: string; items: Trip["gallery"] 
       <div className="sticky top-0 flex h-svh flex-col justify-center gap-8 overflow-hidden pt-16">
         <div className="gutter mx-auto w-full max-w-[1240px]">
           <SectionHead
-            eyebrow="Seen by travelers"
-            title="Before you go, see it through their eyes."
-            aside={<p className="m-0 max-w-[320px] text-[15px] text-muted">Keep scrolling to slide through the places on your roadmap. Tap one to see more traveler photos.</p>}
+            title="Photos from people who've been"
+            aside={<p className="m-0 max-w-[320px] text-[15px] text-muted">Scroll to move through the places on your plan. Tap one for more photos.</p>}
           />
         </div>
         <motion.div ref={track} style={{ x }} className="flex items-end gap-4 pr-8 pl-[max(16px,calc((100vw-1240px)/2+16px))]">

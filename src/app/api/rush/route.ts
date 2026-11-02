@@ -1,12 +1,5 @@
-/**
- * Live rush signals for a trip, from three public sources:
- * - Road: Mapbox drive time on the real route, now vs a typical day (needs MAPBOX_TOKEN),
- *   or else TomTom Traffic flow sampled along the way (needs TOMTOM_API_KEY).
- * - Air: OpenSky Network aircraft near the destination (free, no key).
- * - Interest: Wikipedia pageviews for the destination (free, no key).
- * Each source fails on its own; the page shows what came back.
- * Every source goes through the shared cache, so repeat visits within its window cost no calls.
- */
+// Rush meter signals. Each source can fail on its own and every one goes through lib/cache.
+// Road: Mapbox (MAPBOX_TOKEN) or TomTom (TOMTOM_API_KEY). Air: OpenSky. Interest: Wikipedia pageviews.
 import { addDays, parseISO, toISO } from "@/lib/dates";
 import { hasCoords, type Coords } from "@/lib/geo";
 import { cached } from "@/lib/cache";
@@ -21,7 +14,6 @@ const TIMEOUT = 8000;
 const TTL = { road: RUSH_REFRESH_MIN * 60, air: 60, interest: 60 * 60 };
 const REFRESH_MIN_AGE = 60;
 
-// Caching is done by lib/cache, so fetch itself never stores anything.
 const get = (url: string) => fetch(url, { headers: { "User-Agent": UA }, cache: "no-store", signal: AbortSignal.timeout(TIMEOUT) });
 
 const coords = (lat: string | null, lon: string | null) => {
@@ -29,7 +21,6 @@ const coords = (lat: string | null, lon: string | null) => {
   return lat && lon && hasCoords(c) ? c : null;
 };
 
-/** Points spread along the straight line from home to the destination, plus the destination itself. */
 function routePoints(from: Coords | null, to: Coords) {
   if (!from) return [to];
   return [0.15, 0.35, 0.55, 0.75, 0.92, 1].map((t) => ({ lat: from.lat + (to.lat - from.lat) * t, lon: from.lon + (to.lon - from.lon) * t }));
@@ -113,7 +104,6 @@ async function tomtom(from: Coords | null, to: Coords, key: string): Promise<Roa
 const spot = (c: Coords | null) => (c ? [+c.lat.toFixed(3), +c.lon.toFixed(3)] : null);
 const live = (x: { status: string }) => x.status === "live";
 
-/** Mapbox when there's a token and a From city to route from, else TomTom, else nothing. */
 async function road(from: Coords | null, to: Coords, fresh: boolean) {
   const mb = process.env.MAPBOX_TOKEN;
   const tt = process.env.TOMTOM_API_KEY;

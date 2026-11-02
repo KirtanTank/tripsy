@@ -3,14 +3,12 @@
 
 import { addDays, parseISO, toISO } from "./dates";
 
-/** How many days before the From date the rush window opens. */
 export const RUSH_DAYS = 5;
 
 export type SignalStatus = "live" | "no-key" | "unavailable";
 
 export type RoadProvider = "mapbox" | "tomtom";
 
-/** How often the page re-reads the signals on its own. A manual refresh always fetches fresh data. */
 export const RUSH_REFRESH_MIN = 30;
 
 export type RoadSignal = {

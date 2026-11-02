@@ -43,7 +43,7 @@ How to plan:
 - crowd.bestTime covers the most popular stop: levels has 15 numbers (0-100) for 6:00 through 20:00.
 - days has exactly ${n} entries, in date order.
 - gallery lists 8-12 of the most photogenic places from the plan, using names that would find a photo.
-- Notes and tips are one short plain-text sentence each.`;
+- Notes and tips are one short plain-text sentence each. Write like a friend who has been there: specific and practical. Skip travel-brochure words like hidden gem, vibrant, nestled, bustling or unforgettable.`;
 }
 
 /**

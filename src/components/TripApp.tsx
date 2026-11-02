@@ -19,7 +19,6 @@ import { Finale } from "./Finale";
 import { PlannerSheet } from "./PlannerSheet";
 import { Generating, type Progress } from "./Generating";
 
-/** id is the trip's row in the database, once it's been saved there. */
 type Saved = { request: TripRequest; trip: Trip; id?: string };
 
 const isTrip = (s: Partial<Saved> | null | undefined): s is Saved => !!s?.request && Array.isArray(s.trip?.days) && s.trip.days.length > 0;
@@ -31,7 +30,6 @@ async function fetchTrip(id: string): Promise<Saved> {
   return { id: t.id, request: t.request, trip: t.trip };
 }
 
-/** Puts the trip's share id in the address bar, so the page URL is the trip's link. */
 function setUrlTrip(id: string | null) {
   const url = new URL(location.href);
   if (id) url.searchParams.set("trip", id);
@@ -221,7 +219,7 @@ function Planner() {
         </div>
       </main>
       <footer className="gutter border-t border-line py-7 text-center text-[13px] text-muted">
-        Itineraries, prices and crowd levels are AI estimates. Check opening hours and prices before you go. Photos via Wikimedia Commons. Rush signals from TomTom, OpenSky Network and Wikipedia pageviews.
+        Itineraries, prices and crowd levels are AI estimates. Check opening hours and prices before you go. Photos via Wikimedia Commons. Rush meter data from Mapbox, OpenSky Network and Wikipedia pageviews.
       </footer>
 
       <PlannerSheet open={sheetOpen} onOpenChange={setSheetOpen} initial={draft} onSubmit={generate} />

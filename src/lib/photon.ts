@@ -41,7 +41,6 @@ const kindOf = (p: Feature["properties"]): Place["kind"] => {
   return "place";
 };
 
-/** Destination / home-city suggestions for the planner's search boxes. */
 export async function searchPlaces(q: string): Promise<Place[]> {
   const features = await photon({ q, limit: "10" });
   const seen = new Set<string>();

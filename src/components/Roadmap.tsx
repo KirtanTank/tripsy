@@ -51,7 +51,7 @@ export function Roadmap({ request, days }: { request: TripRequest; days: Day[] }
   return (
     <section id="roadmap" className="mt-24 scroll-mt-16 bg-ink pt-24 pb-28 text-on-ink md:mt-32 md:pt-28">
       <div className="gutter mx-auto max-w-[1240px]">
-        <SectionHead eyebrow="The roadmap" title="Day by day, stop by stop." dark />
+        <SectionHead title="Your days" dark />
 
         <nav
           ref={navRef}
@@ -135,7 +135,7 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
         <div className="flex min-w-0 flex-[999_1_520px] flex-col gap-5 p-5 sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex min-w-0 flex-col gap-1.5">
-              <span className="eyebrow text-[12px] text-muted">
+              <span className="text-sm font-semibold text-muted">
                 Day {n} · {fmt(date, { weekday: "short", month: "short", day: "numeric" })} · {day.area}
               </span>
               <h3 className="m-0 text-[clamp(26px,3vw,34px)] leading-[1.05] font-extrabold">{day.title}</h3>
@@ -209,7 +209,7 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
                       <strong className="text-[17px]">{s.name}</strong>
-                      <em className="eyebrow text-[11px] font-bold text-muted not-italic">{meta.label}</em>
+                      <em className="text-xs font-semibold text-muted not-italic">{meta.label}</em>
                     </div>
                     <span className="text-sm text-muted">{s.note}</span>
                     {isPlace(s.type) && (

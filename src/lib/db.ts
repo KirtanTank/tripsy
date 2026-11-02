@@ -56,7 +56,6 @@ function db() {
   return g.__tripsyDb;
 }
 
-/** Short, unguessable id used in share links. */
 const newId = () => randomBytes(8).toString("base64url");
 
 /** The same trip planned twice by the same visitor updates one row instead of piling up copies. */
