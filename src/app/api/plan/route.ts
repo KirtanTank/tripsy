@@ -10,6 +10,12 @@ import { peek, put } from "@/lib/cache";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
+// Visitors to the live site shouldn't see setup instructions meant for whoever runs it.
+const NO_KEY =
+  process.env.NODE_ENV === "production"
+    ? "Planning new trips isn't switched on for this site yet. Open the example trip to see how it works."
+    : "The planner isn't set up yet: add ANTHROPIC_API_KEY to .env.local and restart the server.";
+
 const MODEL = "claude-opus-5-5";
 /** How long a finished plan is reused for an identical request. Crowd and price estimates hold up for about a week. */
 const PLAN_TTL = 60 * 60 * 24 * 7;
@@ -61,7 +67,7 @@ export async function POST(request: Request) {
   try {
     client = new Anthropic();
   } catch {
-    return Response.json({ error: "The planner isn't set up yet: add ANTHROPIC_API_KEY to .env.local and restart the server." }, { status: 503 });
+    return Response.json({ error: NO_KEY }, { status: 503 });
   }
 
   const encoder = new TextEncoder();
@@ -121,7 +127,7 @@ export async function POST(request: Request) {
         } else if (err instanceof SyntaxError) {
           send({ type: "error", message: "The plan came back incomplete. Try again." });
         } else if (/api key|authentication/i.test((err as Error)?.message ?? "")) {
-          send({ type: "error", message: "The planner isn't set up yet: add ANTHROPIC_API_KEY to .env.local and restart the server." });
+          send({ type: "error", message: NO_KEY });
         } else {
           console.error(err);
           send({ type: "error", message: "Something went wrong while planning. Try again." });

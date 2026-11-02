@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import type { Trip } from "@/lib/schema";
 import { PlacePhoto } from "./PlacePhoto";
-import { SectionHead } from "./Reveal";
+import { SectionHead } from "./SectionHead";
 import { useReducedMotion } from "@/lib/hooks";
 
 /**

@@ -10,7 +10,7 @@ import { formatKm, hasCoords, type Coords, type Place } from "@/lib/geo";
 import { formatHours } from "@/lib/travel";
 import { LEVELS, level } from "@/lib/format";
 import { RUSH_DAYS, RUSH_REFRESH_MIN, interestLevel, roadLevel, rushLevel, rushWindow, type RushData } from "@/lib/rush";
-import { CountUp, SectionHead } from "./Reveal";
+import { SectionHead } from "./SectionHead";
 
 const REFRESH_MS = RUSH_REFRESH_MIN * 60 * 1000;
 const VERDICT = ["Quieter than usual", "Normal traffic", "Picking up", "Getting busy", "The rush is on"];
@@ -145,7 +145,7 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
             {data?.road.status === "live" ? (
               <>
                 <Big>
-                  <CountUp value={data.road.delay * 100} format={(n) => `${Math.round(n) < 0 ? "−" : "+"}${Math.abs(Math.round(n))}%`} />
+                  {`${Math.round(data.road.delay * 100) < 0 ? "−" : "+"}${Math.abs(Math.round(data.road.delay * 100))}%`}
                 </Big>
                 <p className="m-0 text-sm text-on-ink-muted">
                   {data.road.provider === "mapbox"
@@ -160,7 +160,7 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
                   {!data
                     ? "Waiting for data…"
                     : data.road.status === "no-key"
-                      ? "Estimate from the crowd forecast. Add MAPBOX_TOKEN for live road traffic."
+                      ? "No live traffic feed here, so this is an estimate from the crowd forecast."
                       : `${data.road.reason ?? "No live reading"}. Showing the crowd forecast instead.`}
                 </p>
               </>
@@ -171,7 +171,7 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
             {data?.air.status === "live" ? (
               <>
                 <Big>
-                  <CountUp value={data.air.overhead} format={(n) => String(Math.round(n))} /> <span className="text-lg">aircraft</span>
+                  {data.air.overhead} <span className="text-lg">aircraft</span>
                 </Big>
                 <p className="m-0 text-sm text-on-ink-muted">
                   Within about 150 km of {to} right now. {data.air.low ? `${data.air.low} flying low, likely landing or taking off.` : "None flying low near the airports."}
@@ -196,7 +196,7 @@ export function Rush({ request, trip }: { request: TripRequest; trip: Trip }) {
               <>
                 <div className="flex items-end justify-between gap-3">
                   <Big>
-                    <CountUp value={data.interest.ratio} format={(n) => `${n.toFixed(1)}×`} />
+                    {`${data.interest.ratio.toFixed(1)}×`}
                   </Big>
                   <Spark days={data.interest.days} baseline={data.interest.baseline} />
                 </div>

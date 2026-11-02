@@ -9,7 +9,7 @@ import { PRIORITY_LABELS, type TravelMode, type TravelOption, type Trip, type Tr
 import { daysBetween, fmt, parseISO } from "@/lib/dates";
 import { clamp, money, num } from "@/lib/format";
 import { MODE_LABEL, cheapestIndex, fastestIndex, formatHours, recommend } from "@/lib/travel";
-import { SectionHead } from "./Reveal";
+import { SectionHead } from "./SectionHead";
 
 /** Travel always uses teal; the rest of the budget uses neutrals so travel stands out. */
 const TRAVEL = "var(--teal)";

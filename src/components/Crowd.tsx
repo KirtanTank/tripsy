@@ -5,7 +5,7 @@ import { CalendarClock } from "lucide-react";
 import type { Trip, TripRequest } from "@/lib/schema";
 import { calendarDates, fmt, parseISO } from "@/lib/dates";
 import { LEVELS, clamp, level, num } from "@/lib/format";
-import { SectionHead } from "./Reveal";
+import { SectionHead } from "./SectionHead";
 
 const cellStyle = (l: number) => ({ background: `var(--c${l})`, color: l >= 4 ? "var(--c-fg-hi)" : "var(--c-fg-lo)" });
 const HOURS = ["6a", "10a", "2p", "6p", "8p"];

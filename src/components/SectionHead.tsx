@@ -1,10 +1,5 @@
 "use client";
 
-import { animate, motion, useInView, useMotionValue, useTransform } from "motion/react";
-import { useEffect, useRef } from "react";
-
-const ease = [0.22, 1, 0.36, 1] as const;
-
 /** Headlines written by the model often end in a full stop; headings read better without one. */
 export const plain = (s: string) => s.trim().replace(/\.$/, "");
 
@@ -19,17 +14,4 @@ export function SectionHead({ kicker, title, lede, dark, aside }: { kicker?: str
       {aside}
     </div>
   );
-}
-
-export function CountUp({ value, format }: { value: number; format: (n: number) => string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-10% 0px" });
-  const mv = useMotionValue(0);
-  const text = useTransform(mv, (v) => format(v));
-  useEffect(() => {
-    if (!inView) return;
-    const c = animate(mv, value, { duration: 1.4, ease });
-    return () => c.stop();
-  }, [inView, value, mv]);
-  return <motion.span ref={ref}>{text}</motion.span>;
 }

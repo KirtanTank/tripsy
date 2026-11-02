@@ -11,7 +11,7 @@ import { LEVELS, level, mapsUrl, money, num, photosUrl, routeUrl } from "@/lib/f
 import { STOP_META, isPlace } from "./icons";
 import { distanceKm, formatKm, hasCoords, hopHint, type Coords } from "@/lib/geo";
 import { PlacePhoto } from "./PlacePhoto";
-import { SectionHead } from "./Reveal";
+import { SectionHead } from "./SectionHead";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
