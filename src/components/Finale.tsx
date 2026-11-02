@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Check, Copy, Download, Share2, Sparkles } from "lucide-react";
+import { Check, Copy, Download, Link2, Share2, Sparkles } from "lucide-react";
 import type { Trip, TripRequest } from "@/lib/schema";
 import { addDays, fmt, parseISO } from "@/lib/dates";
 import { money, num } from "@/lib/format";
@@ -15,6 +15,8 @@ function toMarkdown(req: TripRequest, trip: Trip) {
     trip.summary,
     "",
   ];
+  const t = trip.travel?.options?.[trip.travel.chosen];
+  if (req.from && t) lines.push(`Getting there: ${t.title} — ${money(num(t.cost), req.currency)} round trip`, "");
   trip.days.forEach((d, i) => {
     lines.push(`## Day ${i + 1} · ${fmt(addDays(parseISO(req.start), i), { weekday: "short", month: "short", day: "numeric" })} — ${d.title}`);
     d.stops.forEach((s) => lines.push(`- ${s.time}  ${s.name} — ${s.note}${num(s.cost) ? ` (${money(num(s.cost), req.currency)})` : ""}`));
@@ -24,11 +26,13 @@ function toMarkdown(req: TripRequest, trip: Trip) {
   return lines.join("\n");
 }
 
-export function Finale({ request, trip, onPlan }: { request: TripRequest; trip: Trip; onPlan: () => void }) {
-  const [copied, setCopied] = useState(false);
+export function Finale({ request, trip, tripId, onPlan }: { request: TripRequest; trip: Trip; tripId: string | null; onPlan: () => void }) {
+  const [copied, setCopied] = useState<"text" | "link" | null>(null);
   const [canShare, setCanShare] = useState(false);
   useEffect(() => setCanShare("share" in navigator), []);
   const text = () => toMarkdown(request, trip);
+  /** The trip's own page, once it's saved: anyone who opens it sees this exact plan. */
+  const link = () => (tripId ? `${location.origin}/?trip=${tripId}` : undefined);
 
   const download = () => {
     const url = URL.createObjectURL(new Blob([text()], { type: "text/markdown" }));
@@ -36,18 +40,19 @@ export function Finale({ request, trip, onPlan }: { request: TripRequest; trip: 
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
-  const copy = async () => {
+  const copy = async (what: "text" | "link") => {
     try {
-      await navigator.clipboard.writeText(text());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
+      await navigator.clipboard.writeText(what === "link" ? link()! : text());
+      setCopied(what);
+      setTimeout(() => setCopied(null), 1800);
     } catch {
       /* clipboard blocked: download still works */
     }
   };
   const share = async () => {
     try {
-      await navigator.share({ title: `${request.dest} roadmap`, text: text() });
+      const url = link();
+      await navigator.share(url ? { title: `${request.dest} roadmap`, url } : { title: `${request.dest} roadmap`, text: text() });
     } catch {
       /* dismissed */
     }
@@ -66,8 +71,13 @@ export function Finale({ request, trip, onPlan }: { request: TripRequest; trip: 
           <button type="button" onClick={download} className={`${btn} bg-on-accent text-accent`}>
             <Download size={18} /> Download
           </button>
-          <button type="button" onClick={copy} className={`${btn} bg-on-accent/15 text-on-accent ring-2 ring-on-accent/70`}>
-            {copied ? <Check size={18} /> : <Copy size={18} />} {copied ? "Copied" : "Copy"}
+          {tripId && (
+            <button type="button" onClick={() => copy("link")} className={`${btn} bg-on-accent/15 text-on-accent ring-2 ring-on-accent/70`}>
+              {copied === "link" ? <Check size={18} /> : <Link2 size={18} />} {copied === "link" ? "Link copied" : "Copy link"}
+            </button>
+          )}
+          <button type="button" onClick={() => copy("text")} className={`${btn} bg-on-accent/15 text-on-accent ring-2 ring-on-accent/70`}>
+            {copied === "text" ? <Check size={18} /> : <Copy size={18} />} {copied === "text" ? "Copied" : "Copy"}
           </button>
           {canShare && (
             <button type="button" onClick={share} className={`${btn} bg-on-accent/15 text-on-accent ring-2 ring-on-accent/70`}>

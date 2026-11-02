@@ -7,11 +7,11 @@ const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-br
 const instrument = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Roadtrip — day-by-day travel roadmaps",
+  title: "Tripsy — day-by-day travel roadmaps",
   description:
     "Pick a destination, dates and budget. Get a day-by-day roadmap with cafes, beaches, must-see spots, traveler photos and a crowd forecast.",
-  applicationName: "Roadtrip",
-  appleWebApp: { capable: true, title: "Roadtrip", statusBarStyle: "black-translucent" },
+  applicationName: "Tripsy",
+  appleWebApp: { capable: true, title: "Tripsy", statusBarStyle: "black-translucent" },
   formatDetection: { telephone: false },
 };
 

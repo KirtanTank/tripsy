@@ -17,11 +17,17 @@ export function useMediaQuery(query: string, initial = false) {
 export const useIsDesktop = () => useMediaQuery("(min-width: 768px)");
 export const useReducedMotion = () => useMediaQuery("(prefers-reduced-motion: reduce)");
 
-const STORE_KEY = "roadtrip:last";
+const STORE_KEY = "tripsy:last";
+/** Where trips were saved before the app was renamed from Roadtrip. */
+const OLD_KEY = "roadtrip:last";
 export const storage = {
   load<T>(): T | null {
     try {
-      const raw = localStorage.getItem(STORE_KEY);
+      let raw = localStorage.getItem(STORE_KEY);
+      if (!raw && (raw = localStorage.getItem(OLD_KEY))) {
+        localStorage.setItem(STORE_KEY, raw);
+        localStorage.removeItem(OLD_KEY);
+      }
       return raw ? (JSON.parse(raw) as T) : null;
     } catch {
       return null;

@@ -95,9 +95,12 @@ h3 {
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
-:focus-visible {
-  outline: 2px solid var(--teal);
-  outline-offset: 2px;
+/* In the base layer so utilities like focus-visible:outline-none can override it. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
 }
 
 /* Side gutter that also clears phone notches / system bars. */
@@ -193,4 +196,26 @@ input[type="range"].budget::-moz-range-thumb {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Rush meter: traffic flowing along a lane. Each dot starts part-way through via a negative delay. */
+.lane-dot {
+  position: absolute;
+  top: 50%;
+  left: var(--x);
+  translate: -50% -50%;
+  animation: lane-flow var(--dur, 6s) linear var(--delay, 0s) infinite;
+}
+@keyframes lane-flow {
+  from { left: -3%; }
+  to { left: 103%; }
+}
+.rush-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lane-dot { animation: none !important; }
 }

@@ -1,13 +1,45 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
-import { MAX_DAYS, TripRequestSchema, TripSchema, type PlanEvent } from "@/lib/schema";
+import { MAX_DAYS, TripRequestSchema, TripSchema, type Day, type PlanEvent, type Trip, type TripRequest } from "@/lib/schema";
 import { daysBetween } from "@/lib/dates";
-import { buildPrompt } from "@/lib/prompt";
+import { buildPrompt, planCacheKey } from "@/lib/prompt";
+import { distanceKm, hasCoords } from "@/lib/geo";
+import { locate, locateStop, mapLimit } from "@/lib/photon";
+import { peek, put } from "@/lib/cache";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const MODEL = "claude-opus-5-5";
+/** How long a finished plan is reused for an identical request. Crowd and price estimates hold up for about a week. */
+const PLAN_TTL = 60 * 60 * 24 * 7;
+
+
+/**
+ * Replaces Claude's approximate stop coordinates with real map positions where the geocoder
+ * finds the place near the destination. Stops it can't place keep Claude's estimate if that is
+ * plausibly near the destination, otherwise lose their coordinates (the UI then skips the distance).
+ */
+async function pinStops(days: Day[], req: TripRequest): Promise<Day[]> {
+  try {
+    const center = hasCoords(req.destCoords) ? req.destCoords : await locate(req.dest);
+    if (!center) return days;
+    const stops = days.flatMap((d) => d.stops);
+    const found = await mapLimit(stops, 5, (s) => (s.type === "move" ? Promise.resolve(null) : locateStop(s.name, center).catch(() => null)));
+    let i = 0;
+    return days.map((d) => ({
+      ...d,
+      stops: d.stops.map((s) => {
+        const hit = found[i++];
+        if (hit) return { ...s, lat: hit.lat, lng: hit.lon };
+        const guess = { lat: s.lat, lon: s.lng };
+        return hasCoords(guess) && distanceKm(guess, center) < 150 ? s : { ...s, lat: NaN, lng: NaN };
+      }),
+    }));
+  } catch {
+    return days;
+  }
+}
 
 export async function POST(request: Request) {
   const parsed = TripRequestSchema.safeParse(await request.json().catch(() => null));
@@ -15,6 +47,15 @@ export async function POST(request: Request) {
   const req = parsed.data;
   const n = daysBetween(req.start, req.end);
   if (n < 1 || n > MAX_DAYS) return Response.json({ error: `Trips must be between 1 and ${MAX_DAYS} days.` }, { status: 400 });
+
+  // Same trip asked recently: answer from the cache. This works even without an API key.
+  const key = planCacheKey(MODEL, req);
+  const fresh = new URL(request.url).searchParams.get("fresh") === "1";
+  const hit = fresh ? null : await peek<Trip>("plan", key);
+  if (hit) {
+    const done: PlanEvent = { type: "done", trip: hit.value, cachedAt: new Date(hit.at).toISOString() };
+    return new Response(JSON.stringify(done) + "\n", { headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store" } });
+  }
 
   let client: Anthropic;
   try {
@@ -59,7 +100,13 @@ export async function POST(request: Request) {
           const text = message.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("");
           const trip = TripSchema.safeParse(JSON.parse(text));
           if (!trip.success || trip.data.days.length === 0) send({ type: "error", message: "The plan came back incomplete. Try again." });
-          else send({ type: "done", trip: { ...trip.data, days: trip.data.days.slice(0, n) } });
+          else {
+            send({ type: "progress", stage: "places", days: n });
+            const days = await pinStops(trip.data.days.slice(0, n), req);
+            const result = { ...trip.data, days };
+            await put("plan", key, result, PLAN_TTL);
+            send({ type: "done", trip: result });
+          }
         }
       } catch (err) {
         if (request.signal.aborted) {

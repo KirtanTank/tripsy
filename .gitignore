@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# saved API answers (lib/cache.ts)
+/.cache/
+
+# Embedded Postgres used when DATABASE_URL is unset
+/.data/

@@ -3,6 +3,7 @@
 import { motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
+import { TripsMenu } from "./TripsMenu";
 import clsx from "clsx";
 import { useLenis } from "lenis/react";
 
@@ -16,7 +17,9 @@ export function Logo() {
   );
 }
 
-export function Nav({ onPlan }: { onPlan: () => void }) {
+type NavProps = { onPlan: () => void; currentId: string | null; onOpenTrip: (id: string) => void; onDeleted: (id: string) => void };
+
+export function Nav({ onPlan, currentId, onOpenTrip, onDeleted }: NavProps) {
   const { scrollY, scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30 });
   const [solid, setSolid] = useState(false);
@@ -43,10 +46,11 @@ export function Nav({ onPlan }: { onPlan: () => void }) {
         <motion.div className="absolute inset-x-0 bottom-0 h-[3px] origin-left bg-accent" style={{ scaleX: progress }} aria-hidden="true" />
         <div className="gutter mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4">
           <a href="#top" onClick={jump("top")} className="flex items-center gap-2.5 font-display text-[21px] font-extrabold">
-            <Logo /> Roadtrip
+            <Logo /> Tripsy
           </a>
           <nav aria-label="Sections" className="hidden items-center gap-6 text-sm font-medium text-on-ink-muted md:flex">
             {[
+              ["rush", "Rush"],
               ["crowd", "Crowds"],
               ["roadmap", "Roadmap"],
               ["gallery", "Gallery"],
@@ -56,6 +60,8 @@ export function Nav({ onPlan }: { onPlan: () => void }) {
               </a>
             ))}
           </nav>
+          <div className="flex items-center gap-2">
+          <TripsMenu currentId={currentId} onOpen={onOpenTrip} onDeleted={onDeleted} />
           <motion.button
             type="button"
             onClick={onPlan}
@@ -65,6 +71,7 @@ export function Nav({ onPlan }: { onPlan: () => void }) {
           >
             <Sparkles size={16} /> Plan a trip
           </motion.button>
+          </div>
         </div>
       </header>
     </>

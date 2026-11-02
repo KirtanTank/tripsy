@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
-import { Info, Map, Plane } from "lucide-react";
+import { Car, Footprints, Info, Map, Plane, Route } from "lucide-react";
 import { useLenis } from "lenis/react";
 import clsx from "clsx";
 import type { Day, TripRequest } from "@/lib/schema";
 import { addDays, fmt, parseISO } from "@/lib/dates";
 import { LEVELS, level, mapsUrl, money, num, photosUrl, routeUrl } from "@/lib/format";
 import { STOP_META, isPlace } from "./icons";
+import { distanceKm, formatKm, hasCoords, hopHint, type Coords } from "@/lib/geo";
 import { PlacePhoto } from "./PlacePhoto";
 import { SectionHead } from "./Reveal";
 
@@ -102,6 +103,13 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
   const places = day.stops.filter((s) => isPlace(s.type));
   const route = places.length > 1 ? routeUrl(places.map((s) => `${s.name}, ${request.dest}`)) : "";
   const cur = request.currency;
+  // Distance from the previous stop that has a map position (stops without one are skipped).
+  const coords: (Coords | null)[] = day.stops.map((s) => (hasCoords({ lat: s.lat, lon: s.lng }) ? { lat: s.lat, lon: s.lng } : null));
+  const hops = coords.map((c, j) => {
+    const prev = j > 0 ? coords[j - 1] : null;
+    return c && prev ? distanceKm(prev, c) : null;
+  });
+  const totalKm = hops.reduce<number>((a, h) => a + (h ?? 0), 0);
 
   return (
     <motion.article
@@ -137,6 +145,11 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
                 {LEVELS[l - 1]}
               </span>
               {num(day.cost) > 0 && <span className="inline-flex h-8 items-center rounded-full border border-line bg-surface px-3 text-[13px] font-bold tabular-nums">{money(num(day.cost), cur)}</span>}
+              {totalKm > 0 && (
+                <span className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-[13px] font-bold tabular-nums" title="Total distance between today's stops, straight line">
+                  <Route size={14} /> {formatKm(totalKm)}
+                </span>
+              )}
             </div>
           </div>
 
@@ -150,12 +163,45 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
             {day.stops.map((s, j) => {
               const meta = STOP_META[s.type] ?? STOP_META.sight;
               const Icon = meta.icon;
+              const hop = hops[j];
+              const hint = hop !== null ? hopHint(hop) : null;
+              const HopIcon = hint?.mode === "walk" ? Footprints : Car;
               return (
                 <motion.li
                   key={j}
                   variants={{ hidden: { opacity: 0, y: 18 }, show: { opacity: 1, y: 0, transition: { duration: 0.5, ease } } }}
-                  className="flex gap-3 border-t border-line py-3.5 sm:gap-4"
+                  className="border-t border-line py-3.5"
                 >
+                  {hop !== null && hint && (
+                    <div className="mb-3 flex items-center gap-3 sm:gap-4">
+                      <span className="w-11 shrink-0 sm:w-14" aria-hidden="true" />
+                      <span className="flex w-10 shrink-0 justify-center" aria-hidden="true">
+                        <motion.span
+                          className="block h-7 w-0 origin-top border-l-2 border-dashed border-muted/50"
+                          initial={{ scaleY: 0 }}
+                          whileInView={{ scaleY: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.5, delay: 0.3 }}
+                        />
+                      </span>
+                      <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-full bg-surface-2 px-3 py-1 text-[13px] font-semibold text-muted">
+                        <HopIcon size={14} aria-hidden="true" />
+                        <span className="tabular-nums">{formatKm(hop)}</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{hint.text}</span>
+                        <span className="sr-only">from the previous stop</span>
+                        <a
+                          className="text-teal hover:underline"
+                          href={`https://www.google.com/maps/dir/?api=1&origin=${coords[j - 1]!.lat},${coords[j - 1]!.lon}&destination=${coords[j]!.lat},${coords[j]!.lon}&travelmode=${hint.mode === "walk" ? "walking" : "driving"}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Directions ↗
+                        </a>
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex gap-3 sm:gap-4">
                   <span className="w-11 shrink-0 pt-2.5 text-sm font-bold text-muted tabular-nums sm:w-14">{s.time}</span>
                   <span className="grid size-10 shrink-0 place-items-center rounded-xl text-[#0E1B2C]" style={{ background: meta.tint }} aria-hidden="true">
                     <Icon size={19} />
@@ -178,6 +224,7 @@ function DayCard({ day, n, request }: { day: Day; n: number; request: TripReques
                     )}
                   </div>
                   <span className="max-w-[110px] shrink-0 pt-2.5 text-right text-sm font-bold tabular-nums">{num(s.cost) > 0 ? money(num(s.cost), cur) : "Free"}</span>
+                  </div>
                 </motion.li>
               );
             })}

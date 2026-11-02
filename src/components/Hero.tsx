@@ -6,6 +6,7 @@ import { ArrowDown, CalendarDays, MapPin, Pencil, Sparkles, Wallet } from "lucid
 import type { TripRequest } from "@/lib/schema";
 import { fmt, parseISO, daysBetween } from "@/lib/dates";
 import { money } from "@/lib/format";
+import { distanceKm, formatKm, hasCoords } from "@/lib/geo";
 
 const HEADLINE = ["Pick", "a", "place.", "We'll", "draw", "the", "road."];
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -25,6 +26,7 @@ export function Hero({ request, isSample, onPlan, onExplore }: { request: TripRe
   const sunY = useTransform(scrollYProgress, [0, 1], [0, 260]);
   const sunScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
   const n = daysBetween(request.start, request.end);
+  const km = request.from && hasCoords(request.fromCoords) && hasCoords(request.destCoords) ? distanceKm(request.fromCoords, request.destCoords) : null;
 
   return (
     <section ref={ref} id="top" className="relative isolate flex min-h-[92svh] items-end overflow-hidden bg-ink text-on-ink">
@@ -115,7 +117,9 @@ export function Hero({ request, isSample, onPlan, onExplore }: { request: TripRe
         >
           <span className="eyebrow w-full text-[11px] text-ink-accent">{isSample ? "Example trip" : "Your trip"}</span>
           <span className="inline-flex items-center gap-2">
-            <MapPin size={15} className="text-ink-accent" /> {request.dest}
+            <MapPin size={15} className="text-ink-accent" />
+            {request.from ? `${request.from.split(",")[0]} → ${request.dest.split(",")[0]}` : request.dest}
+            {km !== null && <span className="text-on-ink-muted">· {formatKm(km)}</span>}
           </span>
           <span className="inline-flex items-center gap-2">
             <CalendarDays size={15} className="text-ink-accent" />

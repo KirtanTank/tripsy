@@ -6,7 +6,7 @@ import { Plane } from "lucide-react";
 
 const WAIT = ["Reading up on your destination…", "Checking the season and holidays…", "Matching cafes and beaches to your interests…", "Fitting it into your budget…"];
 
-export type Progress = { stage: "thinking" | "crowds" | "days" | "gallery"; days: number; total: number; dest: string };
+export type Progress = { stage: "thinking" | "crowds" | "days" | "gallery" | "places"; days: number; total: number; dest: string };
 
 /** Full-screen progress while Claude builds the trip: a plane flies the route as days get written. */
 export function Generating({ progress, onStop }: { progress: Progress | null; onStop: () => void }) {
@@ -19,7 +19,9 @@ export function Generating({ progress, onStop }: { progress: Progress | null; on
 
   const pct = !progress
     ? 0
-    : progress.stage === "gallery"
+    : progress.stage === "places"
+      ? 99
+      : progress.stage === "gallery"
       ? 96
       : progress.stage === "days"
         ? 20 + (progress.days / Math.max(1, progress.total)) * 74
@@ -28,7 +30,9 @@ export function Generating({ progress, onStop }: { progress: Progress | null; on
           : Math.min(12, 4 + tick * 2);
   const message = !progress
     ? ""
-    : progress.stage === "gallery"
+    : progress.stage === "places"
+      ? "Pinning every stop on the map…"
+      : progress.stage === "gallery"
       ? "Picking photo spots…"
       : progress.stage === "days"
         ? `Planning day ${Math.min(progress.days, progress.total)} of ${progress.total}…`
